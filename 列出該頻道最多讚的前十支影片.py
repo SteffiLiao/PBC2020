@@ -2,6 +2,7 @@ from datetime import datetime
 from googleapiclient.discovery import build
 api_key = 'AIzaSyDCnkRjeXJLQmXK30A4YXnOWsi-7RwxTb4'
 youtube = build('youtube', 'v3', developerKey=api_key)
+
 res = youtube.channels().list(
     id='UCkUq-s6z57uJFUFBvZIVTyg',
     part='contentDetails').execute()
@@ -35,20 +36,23 @@ def get_channel_videos(channel_id):  # 找出頻道的所有影片
 
 
 videos = get_channel_videos('UCkUq-s6z57uJFUFBvZIVTyg')
-res=youtube.videos().list(id=videos[0]['snippet']['resourceId']['videoId'],part='statistics').execute()
+res = youtube.videos().list(id=videos[0]['snippet']['resourceId']['videoId'], part='statistics').execute()
+
+
 def get_video_stats(video_ids):
-    stats=[]
-    for i in range(0,len(video_ids),50):
-        res=youtube.videos().list(id=','.join(video_ids[i:i+50]),part='statistics').execute()
-        stats+=res['items']
+    stats = []
+    for i in range(0, len(video_ids), 50):
+        res=youtube.videos().list(id=','.join(video_ids[i:i+50]), part='statistics').execute()
+        stats += res['items']
     return stats
-video_ids=list(map(lambda x:x['snippet']['resourceId']['videoId'],videos))
-stats=get_video_stats(video_ids)
+
+video_ids = list(map(lambda x:x['snippet']['resourceId']['videoId'], videos))
+stats = get_video_stats(video_ids)
 print(len(stats))
-count=0
+count = 0
 most_liked = sorted(stats, key=lambda x:int(x['statistics']['likeCount']), reverse=True)
 for video in most_liked:
     print(video['id'], video['statistics']['likeCount'])
-    count+=1
-    if count==10:
+    count += 1
+    if count == 10:
         break

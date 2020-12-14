@@ -2,9 +2,10 @@
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 import pandas as pd
+import matplotlib.pyplot as plt
 
 api_key = 'AIzaSyABgOEaH7Y49Ns-qPk5d8BBRwUeuZMs-Rw'
-youtube_api = build('youtube', 'v3', developerKey = api_key)
+youtube_api = build('youtube', 'v3', developerKey=api_key)
 
 # searching keywords
 search_items = str(input()) 
@@ -59,11 +60,11 @@ def store_results(response):
             channelId.append(stats['items'][0]['snippet']['channelId']) 
             channelTitle.append(stats['items'][0]['snippet']['channelTitle']) 
             categoryId.append(stats['items'][0]['snippet']['categoryId']) 
-            viewCount.append(stats['items'][0]['statistics']['viewCount'])
+            viewCount.append(int(stats['items'][0]['statistics']['viewCount']))   # int()為了之後輸出圖表
 
             # not every video has likes/dislikes enabled so they won't appear in JSON response
             try:
-                likeCount.append(stats['items'][0]['statistics']['likeCount'])
+                likeCount.append(int(stats['items'][0]['statistics']['likeCount']))
             except:
                 # good to be aware of Channels that turn off their Likes
                 print("Video titled {0}, on Channel {1} Likes Count is not available".format(stats['items'][0]['snippet']['title'],
@@ -73,7 +74,7 @@ def store_results(response):
                 likeCount.append("Not available")
                 
             try:
-                dislikeCount.append(stats['items'][0]['statistics']['dislikeCount'])     
+                dislikeCount.append(int(stats['items'][0]['statistics']['dislikeCount']))
             except:
                 # good to be aware of Channels that turn off their Likes
                 print("Video titled {0}, on Channel {1} Dislikes Count is not available".format(stats['items'][0]['snippet']['title'],
@@ -84,7 +85,7 @@ def store_results(response):
             # sometimes comments are disabled so if they exist append, if not append nothing...
             # it's not uncommon to disable comments, so no need to wrap in try and except  
             if 'commentCount' in stats['items'][0]['statistics'].keys():
-                commentCount.append(stats['items'][0]['statistics']['commentCount'])
+                commentCount.append(int(stats['items'][0]['statistics']['commentCount']))
             else:
                 commentCount.append(0)
          
@@ -119,6 +120,14 @@ result_df.columns = ['tags', 'channelId', 'channelTitle', 'categoryId', 'title',
 # sort it by like_dislike_ratio value
 result_df.sort_values(by=['like_dislike_ratio'], ascending=False)
 
+# 使用者決定想要篩選的ｙ值以及x 值，並輸出圖表（例如他想要比較各個頻道x的關鍵字為python的影片瀏覽數y）
+def sort_data(select1,select2):
+    select_data = result_df.sort_values(by=str(select1), ascending=False).head(10)   # 選出前十名
+    plt.bar(select_data[select2], select_data[select1])
+    plt.xticks(rotation=90)   # x值轉換成垂直
+    plt.show()
+
+sort_data('viewCount','channelId')
 
 
 # 計算清單時長

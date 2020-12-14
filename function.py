@@ -7,9 +7,13 @@ api_key = 'AIzaSyABgOEaH7Y49Ns-qPk5d8BBRwUeuZMs-Rw'
 youtube_api = build('youtube', 'v3', developerKey = api_key)
 
 # searching keywords
-search_items = str(input()) 
+search_items = str(input())
 
-def Youtube_search(query, max_results=50, order="relevance", token=None, location=None, location_radius=None):
+# specifies the method that will be used to order resources
+choose_order = str(input())
+# 'date', 'rating', 'relevance', 'title', 'videoCount', 'viewCount'
+
+def Youtube_search(query, max_results=50, order=choose_order, token=None, location=None, location_radius=None):
 
     # search upto max 50 videos based on query
     search_response = youtube_api.search().list(q=query,

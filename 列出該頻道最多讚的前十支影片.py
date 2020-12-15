@@ -6,10 +6,7 @@ youtube = build('youtube', 'v3', developerKey=api_key)
 res = youtube.channels().list(
     id='UCkUq-s6z57uJFUFBvZIVTyg',
     part='contentDetails').execute()
-res = youtube.playlistItems().list(
-    playlistId='UUkUq-s6z57uJFUFBvZIVTyg',
-    part='snippet',
-    maxResults=50).execute()
+
 
 
 def get_channel_videos(channel_id):  # 找出頻道的所有影片
@@ -39,7 +36,7 @@ videos = get_channel_videos('UCkUq-s6z57uJFUFBvZIVTyg')
 res = youtube.videos().list(id=videos[0]['snippet']['resourceId']['videoId'], part='statistics').execute()
 
 
-def get_video_stats(video_ids):
+def get_video_stats(video_ids):#找出頻道所有影片的數據
     stats = []
     for i in range(0, len(video_ids), 50):
         res=youtube.videos().list(id=','.join(video_ids[i:i+50]), part='statistics').execute()
@@ -51,7 +48,7 @@ stats = get_video_stats(video_ids)
 print(len(stats))
 count = 0
 most_liked = sorted(stats, key=lambda x:int(x['statistics']['likeCount']), reverse=True)
-for video in most_liked:
+for video in most_liked:#列出讚數最多的前十支影片
     print(video['id'], video['statistics']['likeCount'])
     count += 1
     if count == 10:

@@ -14,7 +14,8 @@ search_items = str(input())
 choose_order = str(input())
 # 'date', 'rating', 'relevance', 'title', 'videoCount', 'viewCount'
 
-def Youtube_search(query, max_results=50, order=choose_order, token=None, location=None, location_radius=None):
+# Video
+def video_search(query, max_results=50, order=choose_order, token=None, location=None, location_radius=None):
 
     # search upto max 50 videos based on query
     search_response = youtube_api.search().list(q=query,
@@ -113,7 +114,7 @@ def store_results(response):
  
     return youtube_list
     
-response = Youtube_search(search_items)
+response = video_search(search_items)
 results = store_results(response)
 
 # create dataframe

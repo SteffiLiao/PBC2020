@@ -36,6 +36,12 @@ def channel_description(name):  # 輸入頻道ID獲取頻道簡介
     description = res['items'][0]['brandingSettings']['channel']['description']
     print(description)
 
+def Playlists_Count(name):  # 輸入頻道ID獲取頻道中總共的播放清單數量
+    content = youtube_api.playlists().list(channelId=channelid,
+                                           part='snippet').execute()
+    playlist_count = content['pageInfo']['totalResults']
+    return playlist_count
+
 total_view_time(name)
 total_subscribers(name)
 channel_description(name)

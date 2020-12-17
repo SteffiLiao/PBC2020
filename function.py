@@ -246,7 +246,6 @@ def get_video_stats(video_ids):#找出頻道所有影片的數據
 # 範例試跑程式
 video_ids = list(map(lambda x:x['snippet']['resourceId']['videoId'], videos))
 stats = get_video_stats(video_ids)
-print(len(stats))
 count = 0
 most_liked = sorted(stats, key=lambda x:int(x['statistics']['likeCount']), reverse=True)
 for video in most_liked:#列出讚數最多的前十支影片

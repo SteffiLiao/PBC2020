@@ -250,7 +250,7 @@ print(len(stats))
 count = 0
 most_liked = sorted(stats, key=lambda x:int(x['statistics']['likeCount']), reverse=True)
 for video in most_liked:#列出讚數最多的前十支影片
-    print(video['id'], video['statistics']['likeCount'])
+    print(""https://www.youtube.com/watch?v="+video['id'], video['statistics']['likeCount'])
     count += 1
     if count == 10:
         break

@@ -33,10 +33,14 @@ def video_search(query, max_results=50, order=choose_order, token=None, location
                                                 location=location,
                                                 locationRadius=location_radius).execute()
     items = search_response['items']
-    # assign values
-    title = items[0]['snippet']['title']
-    channelId = items[0]['snippet']['channelId']
-    datePublished = items[0]['snippet']['publishedAt']
+
+    if len(items) == 0:
+        print('Find Nothing')
+    else:
+        # assign values
+        title = items[0]['snippet']['title']
+        channelId = items[0]['snippet']['channelId']
+        datePublished = items[0]['snippet']['publishedAt']
 
     return search_response
     
@@ -56,13 +60,17 @@ def store_results(response):
     category = []
     tags = []
     videos = []
+    datePublished = []
+    url = []
     
     for search_result in response.get("items", []):
         if search_result["id"]["kind"] == "youtube#video":
 
-            # append title and video for each item
+            # append title, video and published date for each item
             title.append(search_result['snippet']['title'])
             videoId.append(search_result['id']['videoId'])
+            url.append('https://www.youtube.com/watch?v=' + search_result['id']['videoId'])
+            datePublished.append(search_result['snippet']['publishedAt'])
 
             # then collect stats on each video using videoId
             stats = youtube_api.videos().list(part='statistics, snippet',
@@ -85,13 +93,23 @@ def store_results(response):
                 likeCount.append("Not available")
                 
             try:
-                dislikeCount.append(stats['items'][0]['statistics']['dislikeCount'])     
+                dislikeCount.append(int(stats['items'][0]['statistics']['dislikeCount']))     
             except:
                 # good to be aware of Channels that turn off their Likes
                 print("Video titled {0}, on Channel {1} Dislikes Count is not available".format(stats['items'][0]['snippet']['title'],
                                                                                                 stats['items'][0]['snippet']['channelTitle']))
                 print(stats['items'][0]['statistics'].keys())
                 dislikeCount.append("Not available")
+
+            try:
+                like = int(stats['items'][0]['statistics']['likeCount'])
+                dislike = int(stats['items'][0]['statistics']['dislikeCount'])
+                # if dislike is zero, append its value
+                if dislike == 0:
+                    dislike = 0.5
+                like_dislike_ratio.append(like / dislike)
+            except:
+                like_dislike_ratio.append("Not available")
 
             # sometimes comments are disabled so if they exist append, if not append nothing...
             # it's not uncommon to disable comments, so no need to wrap in try and except  
@@ -105,18 +123,11 @@ def store_results(response):
             else:
                 # I'm not a fan of empty fields
                 tags.append("No Tags")
-            
-            like = int(stats['items'][0]['statistics']['likeCount'])
-            dislike = int(stats['items'][0]['statistics']['dislikeCount'])
-            # if dislike is zero, append its value
-            if dislike == 0:
-                dislike = 0.5
-                like_dislike_ratio.append(like / dislike)
-            like_dislike_ratio.append(like / dislike)
                 
     # break out of for-loop and if statement and store lists of values in list
     youtube_list = [tags, channelId, channelTitle, categoryId, title, videoId,
-                    viewCount, likeCount, dislikeCount, like_dislike_ratio, commentCount]
+                    viewCount, likeCount, dislikeCount, like_dislike_ratio, 
+                    commentCount, datePublished, url]
  
     return youtube_list
 
@@ -124,8 +135,7 @@ def store_results(response):
 def like_dislike(result):
     portfolio = []
     for i in range(50):
-        # title, videoId, like_dislike_ratio
-        portfolio += [[result[4][i], result[5][i], result[9][i]]]
+        portfolio += [[result[4][i], result[6][i], result[9][i], result[10][i], result[11][i], result[12][i]]]
     portfolio.sort(key=lambda x:x[2], reverse=True)
 
     # just list the top 10
@@ -135,20 +145,18 @@ def like_dislike(result):
 def viewcount(result):
     portfolio = []
     for i in range(50):
-        # title, videoId, viewCount
-        portfolio += [[result[4][i], result[5][i], result[6][i]]]
-    portfolio.sort(key=lambda x:x[2], reverse=True)
+        portfolio += [[result[4][i], result[6][i], result[9][i], result[10][i], result[11][i], result[12][i]]]
+    portfolio.sort(key=lambda x:x[1], reverse=True)
 
     # just list the top 10
-    return portfolio[0:10]
+    return portfolio[0:10] 
 
 # function 留言數
 def commentcount(result):
     portfolio = []
     for i in range(50):
-        # title, videoId, commentCount
-        portfolio += [[result[4][i], result[5][i], result[10][i]]]
-    portfolio.sort(key=lambda x:x[2], reverse=True)
+        portfolio += [[result[4][i], result[6][i], result[9][i], result[10][i], result[11][i], result[12][i]]]
+    portfolio.sort(key=lambda x:x[3], reverse=True)
 
     # just list the top 10
     return portfolio[0:10]

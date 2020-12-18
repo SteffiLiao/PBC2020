@@ -11,11 +11,16 @@ youtube_api = build('youtube', 'v3', developerKey=api_key)
 # searching keywords
 search_items = str(input())
 
+# excluding keywords
+exclude_items = ' -' + str(input())
+
+# query
+query = search_items + exclude_items
+
 # specifies the method that will be used to order resources
 choose_order = str(input())
 # 'date', 'rating', 'relevance', 'title', 'videoCount', 'viewCount'
 
-# Video
 def video_search(query, max_results=50, order=choose_order, token=None, location=None, location_radius=None):
 
     # search upto max 50 videos based on query
@@ -66,7 +71,7 @@ def store_results(response):
             channelId.append(stats['items'][0]['snippet']['channelId']) 
             channelTitle.append(stats['items'][0]['snippet']['channelTitle']) 
             categoryId.append(stats['items'][0]['snippet']['categoryId']) 
-            viewCount.append(int(stats['items'][0]['statistics']['viewCount']))   # int()為了之後輸出圖表
+            viewCount.append(int(stats['items'][0]['statistics']['viewCount']))
 
             # not every video has likes/dislikes enabled so they won't appear in JSON response
             try:
@@ -80,7 +85,7 @@ def store_results(response):
                 likeCount.append("Not available")
                 
             try:
-                dislikeCount.append(int(stats['items'][0]['statistics']['dislikeCount']))
+                dislikeCount.append(stats['items'][0]['statistics']['dislikeCount'])     
             except:
                 # good to be aware of Channels that turn off their Likes
                 print("Video titled {0}, on Channel {1} Dislikes Count is not available".format(stats['items'][0]['snippet']['title'],
@@ -114,17 +119,43 @@ def store_results(response):
                     viewCount, likeCount, dislikeCount, like_dislike_ratio, commentCount]
  
     return youtube_list
+
+# function 讚踩比
+def like_dislike(result):
+    portfolio = []
+    for i in range(50):
+        # title, videoId, like_dislike_ratio
+        portfolio += [[result[4][i], result[5][i], result[9][i]]]
+    portfolio.sort(key=lambda x:x[2], reverse=True)
+
+    # just list the top 10
+    return portfolio[0:10]
+
+# function 影片觀看數
+def viewcount(result):
+    portfolio = []
+    for i in range(50):
+        # title, videoId, viewCount
+        portfolio += [[result[4][i], result[5][i], result[6][i]]]
+    portfolio.sort(key=lambda x:x[2], reverse=True)
+
+    # just list the top 10
+    return portfolio[0:10]
+
+# function 留言數
+def commentcount(result):
+    portfolio = []
+    for i in range(50):
+        # title, videoId, commentCount
+        portfolio += [[result[4][i], result[5][i], result[10][i]]]
+    portfolio.sort(key=lambda x:x[2], reverse=True)
+
+    # just list the top 10
+    return portfolio[0:10]
     
-response = video_search(search_items)
-results = store_results(response)
-
-# create dataframe
-result_df = pd.DataFrame(results).transpose()
-result_df.columns = ['tags', 'channelId', 'channelTitle', 'categoryId', 'title', 'videoId',
-                     'viewCount', 'likeCount', 'dislikeCount', 'like_dislike_ratio', 'commentCount']
-
-# sort it by like_dislike_ratio value
-result_df.sort_values(by=['like_dislike_ratio'], ascending=False)
+like_dislike(store_results(video_search(query)))
+viewcount(store_results(video_search(query)))
+commentcount(store_results(video_search(query)))
 
 # 使用者決定想要篩選的ｙ值以及x 值，並輸出圖表（例如他想要比較各個頻道x的關鍵字為python的影片瀏覽數y）
 def sort_data(select1,select2):

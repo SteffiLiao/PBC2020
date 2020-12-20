@@ -177,7 +177,7 @@ result_df = dataframe(store_results(video_search(query)))
 
 
 # 'tags', 'channelId', 'channelTitle', 'categoryId', 'title', 'videoId',
-#                      'viewCount', 'likeCount', 'dislikeCount', 'like_dislike_ratio', 'commentCount'
+# 'viewCount', 'likeCount', 'dislikeCount', 'like_dislike_ratio', 'commentCount'
 
 # 使用者決定想要篩選的ｙ值以及x 值，並輸出圖表（例如他想要比較各個頻道x的關鍵字為python的影片瀏覽數y）
 def sort_data(select1, select2):

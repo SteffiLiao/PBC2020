@@ -169,7 +169,8 @@ commentcount(store_results(video_search(query)))
 def dataframe(result):
     df = pd.DataFrame(result).transpose()
     df.columns = ['tags', 'channelId', 'channelTitle', 'categoryId', 'title', 'videoId',
-                  'viewCount', 'likeCount', 'dislikeCount', 'like_dislike_ratio', 'commentCount']
+                  'viewCount', 'likeCount', 'dislikeCount', 'like_dislike_ratio', 'commentCount',
+                  'datePublished', 'url']
     
     return df
 

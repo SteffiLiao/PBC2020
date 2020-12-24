@@ -135,7 +135,8 @@ def store_results(response):
 def like_dislike(result):
     portfolio = []
     for i in range(50):
-        portfolio += [[result[4][i], result[6][i], result[9][i], result[10][i], result[11][i], result[12][i]]]
+        if result[9][i] != 'Not available':
+            portfolio += [[result[4][i], result[6][i], result[9][i], result[10][i], result[11][i], result[12][i]]]
     portfolio.sort(key=lambda x:x[2], reverse=True)
 
     # just list the top 10
@@ -145,7 +146,8 @@ def like_dislike(result):
 def viewcount(result):
     portfolio = []
     for i in range(50):
-        portfolio += [[result[4][i], result[6][i], result[9][i], result[10][i], result[11][i], result[12][i]]]
+        if result[6][i] != 'Not available':
+            portfolio += [[result[4][i], result[6][i], result[9][i], result[10][i], result[11][i], result[12][i]]]
     portfolio.sort(key=lambda x:x[1], reverse=True)
 
     # just list the top 10
@@ -155,7 +157,8 @@ def viewcount(result):
 def commentcount(result):
     portfolio = []
     for i in range(50):
-        portfolio += [[result[4][i], result[6][i], result[9][i], result[10][i], result[11][i], result[12][i]]]
+        if result[10][i] != 'Not available':
+            portfolio += [[result[4][i], result[6][i], result[9][i], result[10][i], result[11][i], result[12][i]]]
     portfolio.sort(key=lambda x:x[3], reverse=True)
 
     # just list the top 10

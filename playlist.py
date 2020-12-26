@@ -1,6 +1,7 @@
 # import library
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
 import re
 
 api_key = 'AIzaSyABgOEaH7Y49Ns-qPk5d8BBRwUeuZMs-Rw'
@@ -9,7 +10,7 @@ youtube = build('youtube', 'v3', developerKey=api_key)
 pl_url = input()
 
 pl_id = (pl_url[(pl_url.find("list=")+5):pl_url.find("&ab_channel=")])  # 抓取playlist id
-
+print(pl_id)
 order = input()  # 決定排序
 
 
@@ -71,7 +72,7 @@ def playlist_time(pl_id):
         minutes, seconds = divmod(total_seconds, 60)
         hours, minutes = divmod(minutes, 60)
 
-        print("清單影片數量：" + str(len(vid_ids)) + " 影片總時長："+ f'{hours}:{minutes}:{seconds}')  # 62:9:43
+        print("清單影片數量：" + str(len(vid_ids)) + " 影片總時長：" + f'{hours}:{minutes}:{seconds}')  # 62:9:43
 
     except:
         print("Sorry...Something went wrong")
@@ -136,9 +137,9 @@ def playlist_search(pl_id, order):
                         "dislike": int(vid_dislike),
                         "like_dislike_ratio": like_dislike_ratio,
                         "favorite": vid_favorite,
-                        "comment": vid_comment,
+                        "comment": int(vid_comment),
                         "date": date,
-                        "url": yt_link,
+                        "url": yt_link
 
                     }
                 )
@@ -154,7 +155,7 @@ def playlist_search(pl_id, order):
         for video in videos[:10]:  # 前十名關鎧次數清單
             return_list.append([video["title"], video["views"], video["like_dislike_ratio"],
                   video["comment"], video["date"], video["url"]])
-        # print(return_list)
+        print(return_list)
         return return_list
 
     except:
@@ -162,3 +163,4 @@ def playlist_search(pl_id, order):
 
 
 playlist_search(pl_id, order)
+

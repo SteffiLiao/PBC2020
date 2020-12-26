@@ -154,7 +154,7 @@ def playlist_search(pl_id, order):
         for video in videos[:10]:  # 前十名關鎧次數清單
             return_list.append([video["title"], video["views"], video["like_dislike_ratio"],
                   video["comment"], video["date"], video["url"]])
-        # print(return_list)
+        print(return_list)
         return return_list
 
     except:
